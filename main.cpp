@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 
+#include "teacher.h"
 #include "student.h"
 
 #define NUM_STUDENTS 20
@@ -56,34 +57,46 @@
 //   return teller;
 // }
 
-void printStudents(std::vector<Student>& students){
-  for (Student& s : students) {
-    std::cout << "Student name " << s.getName() << std::endl; 
+void printStudents(std::vector<Person*>& students){
+  for (Person* s : students) {
+    std::cout << "Person name " << s->getName() << std::endl; 
   }
 }
 
-int IndexOfStudent(std::vector<Student>& students, bool (*fn) (Student)){
+int IndexOfStudent(std::vector<Person*>& students, bool (*fn) (Person)){
    for (int i = 0; i < students.size(); i++) {
-      if (fn(students[i])) return i;
+      if (fn(*students[i])) return i;
     }
     return -1; 
 }
 
-int RemoveStudent(std::vector<Student>& students, int where){
+int RemoveStudent(std::vector<Person*>& students, int where){
   students.erase(students.begin() + where);
   return 1;
 }
 
-int InsertStudent(std::vector<Student>& students, int age, std::string firstname, std::string lastname, int where){
+int InsertStudent(std::vector<Person*>& persons, int number, int age, std::string firstname, std::string lastname, int where){
     if (where == 0) 
-      students.emplace_back(age, firstname, lastname);
-    else 
-      students.emplace(students.begin() + where, age, firstname, lastname);
+      persons.push_back(new Student(number, age, firstname, lastname));
+    else {
+     // students.emplace(students.begin() + where, 1, age, firstname, lastname);
+      persons.insert(persons.begin() + where, new Student(number, age, firstname, lastname));
+    }
     return 1; 
 }
 
-int InsertStudent(std::vector<Student>& students, int age, char* firstname, char* lastname){
-    return InsertStudent(students, age, firstname, lastname, 0); 
+int InsertTeacher(std::vector<Person*>& persons, std::string code, int age, std::string firstname, std::string lastname, int where){
+    if (where == 0) 
+      persons.push_back(new Teacher(code, age, firstname, lastname));
+    else {
+     // students.emplace(students.begin() + where, 1, age, firstname, lastname);
+     persons.insert(persons.begin() + where, new Teacher(code, age, firstname, lastname));
+    }
+    return 1; 
+}
+
+int InsertStudent(std::vector<Person*>& students, int code, int age, char* firstname, char* lastname){
+    return InsertStudent(students, code, age, firstname, lastname, 0); 
 }
 
 void p(std::string& test) {
@@ -93,22 +106,24 @@ void p(std::string& test) {
 
 int main(int argc, char** argv){
  //  STUDENTNODEPTR pHead = NULL; // LINKED LIST 
-  std::vector<Student> students; 
+  std::vector<Person*> students; 
 
-  InsertStudent(students, 47, "john1", "gorter");
-  InsertStudent(students, 48, "john2", "gorter");
-  InsertStudent(students, 49, "john3", "gorter");
-  InsertStudent(students, 47, "john4", "gorter");
+  InsertStudent(students, 1, 47, "john1", "gorter");
+  InsertStudent(students, 2, 48, "john2", "gorter");
+  InsertStudent(students, 3, 49, "john3", "gorter");
+  InsertStudent(students, 4, 47, "john4", "gorter");
   printStudents(students);
 
-  InsertStudent(students, 47, "john3.5", "gorter",3);
+  InsertStudent(students, 5, 47, "john3.5", "gorter",3);
+  InsertTeacher(students, "gtrjm", 47, "(teacher)john", "gorter",3);
+
   printStudents(students);
 
   RemoveStudent(students, 3);
   printStudents(students);
 
 
-  int index =  IndexOfStudent(students, [](Student s){
+  int index =  IndexOfStudent(students, [](Person s){
     return s.getAge() == 49;
   });
   RemoveStudent(students, index);

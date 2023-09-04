@@ -3,16 +3,17 @@
 
 #include <string>
 
-class Student {
+#include "person.h"
+#include <string>
+
+class Student: public Person {
     private:
-     int m_age; 
-     std::string m_firstname;
-     std::string m_lastname; 
+     int m_Number;
 
     public:
-    std::string getName(); 
-    int getAge(); 
-    Student(int a, std::string f, std::string l); 
+    int GetNumber(); 
+    std::string getName() override;
+    Student(int n, int a, std::string f, std::string l); 
 };
 
 #endif

@@ -2,18 +2,16 @@
 #include "student.h"
 
 
+int Student::GetNumber(){
+    return m_Number;
+}
+
 std::string Student::getName() {
-   return m_firstname + " " + m_lastname;
+    return "STUDENT: " + std::to_string(m_Number) + " " + Person::getName(); 
 }
 
-int Student::getAge() {
-    return m_age;
-}
-
-Student::Student(int a, std::string f, std::string l) {
-    m_age = a; 
-    m_firstname = f; 
-    m_lastname = l;
+Student::Student(int n, int a, std::string f, std::string l) : Person (a, f, l) {
+   m_Number = n; 
 }
 
 
