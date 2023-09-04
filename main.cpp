@@ -7,6 +7,8 @@
 #include <fstream>
 #include <iostream>
 
+#include "student.h"
+
 #define NUM_STUDENTS 20
 #define MAX_LENGTH 20
 
@@ -19,7 +21,7 @@
 
 typedef struct studentNode * STUDENTNODEPTR;
 typedef struct studentNode {
-  student student; 
+  Student student; 
   STUDENTNODEPTR next;
   
 } STUDENTNODE;
@@ -70,12 +72,12 @@ typedef struct studentNode {
 void printStudents(STUDENTNODEPTR* pHead){
    STUDENTNODEPTR prev, curr = *pHead;
   while (curr != NULL) {
-    std::cout << "Student name " << curr->student.firstname << std::endl; 
+    std::cout << "Student name " << curr->student.getName() << std::endl; 
     curr = curr->next;
   }
 }
 
-int IndexOfStudent(STUDENTNODEPTR* pHead, bool (*fn) (student)){
+int IndexOfStudent(STUDENTNODEPTR* pHead, bool (*fn) (Student)){
   STUDENTNODEPTR prev, curr;
   if (*pHead == NULL) return -1;
   int index = 0; 
@@ -128,9 +130,10 @@ int InsertStudent(STUDENTNODEPTR* pHead, int age, std::string firstname, std::st
 
     
     STUDENTNODEPTR pFirstStudent = (STUDENTNODEPTR) malloc(sizeof(STUDENTNODE)); 
-    pFirstStudent->student.age = age; 
-    pFirstStudent->student.firstname = firstname; 
-    pFirstStudent->student.lastname = lastname; 
+    pFirstStudent->student = Student(age, firstname, lastname); 
+    // pFirstStudent->student.age = age; 
+    // pFirstStudent->student.firstname = firstname; 
+    // pFirstStudent->student.lastname = lastname; 
     
     if (where == 0) {
       if (*pHead == NULL) *pHead = pFirstStudent;
@@ -175,8 +178,8 @@ int main(int argc, char** argv){
   printStudents(&pHead);
 
 
-  int index =  IndexOfStudent(&pHead, [](student s){
-    return s.age == 49;
+  int index =  IndexOfStudent(&pHead, [](Student s){
+    return s.getAge() == 49;
   });
   RemoveStudent(&pHead, index);
   std::cout << "%d" << index << std::endl; 
