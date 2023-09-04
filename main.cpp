@@ -6,25 +6,12 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 #include "student.h"
 
 #define NUM_STUDENTS 20
 #define MAX_LENGTH 20
-
-
-// typedef struct {
-//   int age; 
-//   std::string firstname; 
-//   std::string lastname;
-// } student, * studentptr;
-
-typedef struct studentNode * STUDENTNODEPTR;
-typedef struct studentNode {
-  Student student; 
-  STUDENTNODEPTR next;
-  
-} STUDENTNODE;
 
 // void getStudents(student* students, int total){
 //   for (int i = total; i < NUM_STUDENTS; i++) {
@@ -69,121 +56,64 @@ typedef struct studentNode {
 //   return teller;
 // }
 
-void printStudents(STUDENTNODEPTR* pHead){
-   STUDENTNODEPTR prev, curr = *pHead;
-  while (curr != NULL) {
-    std::cout << "Student name " << curr->student.getName() << std::endl; 
-    curr = curr->next;
+void printStudents(std::vector<Student>& students){
+  for (Student& s : students) {
+    std::cout << "Student name " << s.getName() << std::endl; 
   }
 }
 
-int IndexOfStudent(STUDENTNODEPTR* pHead, bool (*fn) (Student)){
-  STUDENTNODEPTR prev, curr;
-  if (*pHead == NULL) return -1;
-  int index = 0; 
-    prev = curr = *pHead;
-    if (fn(curr->student)) return index;
-    while (curr->next != NULL) {
-      index++;
-      curr = curr->next;
-      if (fn(curr->student)) return index;
+int IndexOfStudent(std::vector<Student>& students, bool (*fn) (Student)){
+   for (int i = 0; i < students.size(); i++) {
+      if (fn(students[i])) return i;
     }
     return -1; 
 }
 
-int RemoveStudent(STUDENTNODEPTR* pHead, int where){
-  STUDENTNODEPTR prev, curr;
-  if (*pHead == NULL && where != 0) return 0;
-  int index = 0; 
-    prev = curr = *pHead;
-    if (where > 0) {
-      while (curr->next != NULL) {
-        prev = curr;
-        curr = curr->next;
-        index++;
-        if (index == where) break;
-      }
-    }
-    if (index != where) return 0; 
-    STUDENTNODEPTR temp = curr; 
-    prev->next = curr->next; 
-    temp->next = NULL;
-    free(temp); 
-    return 1;
+int RemoveStudent(std::vector<Student>& students, int where){
+  students.erase(students.begin() + where);
+  return 1;
 }
 
-int InsertStudent(STUDENTNODEPTR* pHead, int age, std::string firstname, std::string lastname, int where){
-    STUDENTNODEPTR prev, curr;
-    if (*pHead == NULL && where != 0) return 0;
-    
-    int index = 0; 
-    prev = curr = *pHead;
-    if (where > 0) {
-      while (curr->next != NULL) {
-        prev = curr;
-        curr = curr->next;
-        index++;
-        if (index == where) break;
-      }
-    }
-    if (index != where) return 0; 
-
-    
-    STUDENTNODEPTR pFirstStudent = (STUDENTNODEPTR) malloc(sizeof(STUDENTNODE)); 
-    pFirstStudent->student = Student(age, firstname, lastname); 
-    // pFirstStudent->student.age = age; 
-    // pFirstStudent->student.firstname = firstname; 
-    // pFirstStudent->student.lastname = lastname; 
-    
-    if (where == 0) {
-      if (*pHead == NULL) *pHead = pFirstStudent;
-      else {
-         while(curr->next != NULL) curr = curr->next;
-         curr->next = pFirstStudent;
-      } 
-    }
-    else {
-      pFirstStudent->next = prev->next;
-      prev->next = pFirstStudent;
-    }
+int InsertStudent(std::vector<Student>& students, int age, std::string firstname, std::string lastname, int where){
+    if (where == 0) 
+      students.emplace_back(age, firstname, lastname);
+    else 
+      students.emplace(students.begin() + where, age, firstname, lastname);
     return 1; 
 }
 
-
-int InsertStudent(STUDENTNODEPTR* pHead, int age, char* firstname, char* lastname){
-    return InsertStudent(pHead, age, firstname, lastname, 0); 
+int InsertStudent(std::vector<Student>& students, int age, char* firstname, char* lastname){
+    return InsertStudent(students, age, firstname, lastname, 0); 
 }
 
 void p(std::string& test) {
   //// whatever
   test = "hello world";
-
 }
 
 int main(int argc, char** argv){
+ //  STUDENTNODEPTR pHead = NULL; // LINKED LIST 
+  std::vector<Student> students; 
+
+  InsertStudent(students, 47, "john1", "gorter");
+  InsertStudent(students, 48, "john2", "gorter");
+  InsertStudent(students, 49, "john3", "gorter");
+  InsertStudent(students, 47, "john4", "gorter");
+  printStudents(students);
+
+  InsertStudent(students, 47, "john3.5", "gorter",3);
+  printStudents(students);
+
+  RemoveStudent(students, 3);
+  printStudents(students);
 
 
-  STUDENTNODEPTR pHead = NULL; // LINKED LIST 
-
-  InsertStudent(&pHead, 47, "john1", "gorter");
-  InsertStudent(&pHead, 48, "john2", "gorter");
-  InsertStudent(&pHead, 49, "john3", "gorter");
-  InsertStudent(&pHead, 47, "john4", "gorter");
-  printStudents(&pHead);
-
-  InsertStudent(&pHead, 47, "john3.5", "gorter",3);
-  printStudents(&pHead);
-
-  RemoveStudent(&pHead, 3);
-  printStudents(&pHead);
-
-
-  int index =  IndexOfStudent(&pHead, [](Student s){
+  int index =  IndexOfStudent(students, [](Student s){
     return s.getAge() == 49;
   });
-  RemoveStudent(&pHead, index);
+  RemoveStudent(students, index);
   std::cout << "%d" << index << std::endl; 
-  printStudents(&pHead);
+  printStudents(students);
 
   exit(0); 
 
